@@ -4,3 +4,5 @@ print(True)
 print(False)
 print("Python")
 
+dir()
+dir(100)
