@@ -8,4 +8,4 @@ def executar(funcao):
     print("executando executar")
     return funcao("Bruno")
 
-print(executar(mensagem_longa))
+print(executar(mensagem_longa)) 
