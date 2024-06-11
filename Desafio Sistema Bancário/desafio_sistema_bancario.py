@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod, abstractproperty
 from datetime import datetime
 import textwrap
+from pathlib import Path
+
+ROOT_PATH = Path(__file__).parent
 
 
 class ContaIterador:
@@ -24,7 +27,6 @@ class ContaIterador:
             raise StopIteration
         finally:
             self._index += 1
-
 
 class Cliente:
     def __init__(self, endereco):
@@ -156,7 +158,6 @@ class Historico:
                 transacoes.append(transacao)
         return transacoes
 
-
 class Transacao(ABC):
     @property
     @abstractmethod
@@ -177,6 +178,7 @@ class Saque(Transacao):
 
         if sucesso_transacao:
             conta.historico.adicionar_transacao(self)
+
 class Deposito(Transacao):
     def __init__(self, valor):
         self._valor = valor
@@ -192,7 +194,12 @@ class Deposito(Transacao):
 def log_transacao(func):
     def envelope(*args, **kwargs):
         resultado = func(*args, **kwargs)
-        print(f"{datetime.now()}: {func.__name__.upper()}")
+        data_hora = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        with open(ROOT_PATH / "log.txt", "a") as arquivo:
+            arquivo.write(
+                f"[{data_hora}] Função '{func.__name__}' executadata com argumentos {args} e {kwargs}. 
+                Retornou {resultado}\n"
+            )
         return resultado
     return envelope
 
@@ -208,7 +215,6 @@ def menu():
     [q]\tSair
     => """
     return input(textwrap.dedent(menu))
-
 
 def filtrar_cliente(cpf, clientes):
     clientes_filtrados = [cliente for cliente in clientes if cliente.cpf == cpf]
